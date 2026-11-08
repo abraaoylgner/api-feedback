@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+# A seção Globals evita repetição de código nas lambdas
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 1024
+    Runtime: java21
+    # Caminho do JAR gerado pelo Maven após o build
+    CodeUri: target/api-feedback-0.0.1-SNAPSHOT.jar
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        # Puxando segredos do AWS Systems Manager (SSM)
+        DB_URL: '{{resolve:ssm:/feedback/db_url}}'
+        DB_USER: '{{resolve:ssm:/feedback/db_user}}'
+        DB_PASS: '{{resolve:ssm:/feedback/db_pass}}'
+        # Injetando o nome real da fila gerada pela AWS
+        SQS_FILA_CRITICAS: !GetAtt FilaNotasCriticas.QueueName
+
+Resources:
+  # 1. Declaração do Recurso: Fila SQS
+  FilaNotasCriticas:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: fila-notas-criticas
+
+  # 2. Lambda: API de Ingestão de Avaliações
+  ProcessarAvaliacaoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      SnapStart:
+        ApplyOn: PublishedVersions # Otimização de cold start para Java
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: processarAvaliacao
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /avaliacao
+            Method: post
+      Policies:
+        # Permissão para publicar na fila
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt FilaNotasCriticas.QueueName
+
+  # 3. Lambda: Relatório Semanal (Cron Job)
+  GerarRelatorioSemanalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: gerarRelatorioSemanal
+      Events:
+        WeeklySchedule:
+          Type: Schedule
+          Properties:
+            # Executa toda segunda-feira às 8h
+            Schedule: cron(0 8 ? * MON *)
+      Policies:
+        # Permissão para enviar e-mails via SES
+        - SESSendEmailPolicy:
+            IdentityName: 'admin@fiap.com'
