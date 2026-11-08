@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 
 @SpringBootTest(properties = {
 		"spring.jpa.hibernate.ddl-auto=none",
+		"spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect",
 		"spring.cloud.aws.region.static=us-east-1",
 		"spring.cloud.aws.ses.enabled=false",
 		"spring.cloud.aws.sqs.enabled=false"
