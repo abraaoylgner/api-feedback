@@ -1,6 +1,7 @@
 package com.pos.tech.challenge.feedback.domain.entities;
 
 import com.pos.tech.challenge.feedback.domain.enums.UrgenciaEnum;
+import com.pos.tech.challenge.feedback.domain.exceptions.DominioException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,25 +13,30 @@ public class Avaliacao {
     private UrgenciaEnum urgencia;
     private LocalDateTime dataEnvio;
 
-    // Construtor usado na criação de uma nova avaliação (POST /avaliacao)
     public Avaliacao(String descricao, int nota) {
-        if (nota < 0 || nota > 10) {
-            throw new IllegalArgumentException("Nota deve ser entre 0 e 10");
-        }
+        validar(descricao, nota);
         this.id = UUID.randomUUID();
-        this.descricao = descricao;
+        this.descricao = descricao.trim();
         this.nota = nota;
         this.dataEnvio = LocalDateTime.now();
         this.urgencia = classificarUrgencia(nota);
     }
 
-    // Construtor usado para reconstruir a entidade vinda do banco de dados
     public Avaliacao(UUID id, String descricao, int nota, UrgenciaEnum urgencia, LocalDateTime dataEnvio) {
         this.id = id;
         this.descricao = descricao;
         this.nota = nota;
         this.urgencia = urgencia;
         this.dataEnvio = dataEnvio;
+    }
+
+    private void validar(String descricao, int nota) {
+        if (nota < 0 || nota > 10) {
+            throw new DominioException("Nota deve ser entre 0 e 10");
+        }
+        if (descricao == null || descricao.isBlank()) {
+            throw new DominioException("A descrição da avaliação é obrigatória");
+        }
     }
 
     private UrgenciaEnum classificarUrgencia(int nota) {
