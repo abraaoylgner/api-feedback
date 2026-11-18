@@ -13,7 +13,6 @@ import java.util.function.Function;
 @Configuration
 public class AvaliacaoFunctions {
 
-    // Regra 1: Recepção. API Gateway faz POST para esta função.
     @Bean
     public Function<AvaliacaoRequestDTO, AvaliacaoResponseDTO> processarAvaliacao(
             ProcessarAvaliacaoUseCase useCase) {
@@ -24,14 +23,11 @@ public class AvaliacaoFunctions {
         };
     }
 
-    // Regra 3: Relatórios. EventBridge aciona esta função semanalmente.
     @Bean
-    public Consumer<Void> gerarRelatorioSemanal(
+    public Consumer<Object> gerarRelatorioSemanal(
             GerarRelatorioSemanalUseCase useCase) {
 
         return input -> {
-            // Aciona o caso de uso que agrupa e envia o relatório
-            // Contendo: Descrição, Urgência, Data, Qtd/dia, Qtd/urgência[cite: 4].
             useCase.executar();
         };
     }

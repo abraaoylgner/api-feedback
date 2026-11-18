@@ -1,0 +1,137 @@
+type: collection.insomnia.rest/5.0
+name: feedback-api
+meta:
+  id: wrk_4edc6f854b654d658fab39dcdfc78ba5
+  created: 1794269165668
+  modified: 1794269165668
+  description: ""
+collection:
+  - url: http://localhost:8080/processarAvaliacao
+    name: 1. [400] Avaliação Inválida (Nota 11)
+    meta:
+      id: req_312bed316eba442e86390645fdf338bd
+      created: 1794269182099
+      modified: 1794965912684
+      isPrivate: false
+      description: ""
+      sortKey: -1794269182099
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "descricao": "Aula excelente, tudo funcionou muito bem",
+          "nota":11
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.3.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/gerarRelatorioSemanal
+    name: 4. [200] Gerar Relatório Semanal (Cron EventBridge)
+    meta:
+      id: req_65d155e14cc748588cc34aa8fb2cc967
+      created: 1794964325637
+      modified: 1794966104368
+      isPrivate: false
+      description: ""
+      sortKey: -1790874586420.5
+    method: POST
+    body:
+      mimeType: application/json
+      text: "{}"
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.3.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/processarAvaliacao
+    name: 2. [200] Avaliação Normal (Nota 9 - Sem Alerta)
+    meta:
+      id: req_2344347884024071bf2b3cd28c1ffde6
+      created: 1794965870711
+      modified: 1794965956722
+      isPrivate: false
+      description: ""
+      sortKey: -1792006118380
+    method: POST
+    body:
+      mimeType: application/json
+      text: >-
+        {
+          "descricao": "Excelente didática e exemplos práticos sobre arquitetura serverless na AWS!",
+          "nota": 9
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.3.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/processarAvaliacao
+    name: 3. [200] Avaliação Crítica (Nota 2 - Alerta SQS + SES)
+    meta:
+      id: req_1ec764e8e4c64b29a480e5fbf6989b29
+      created: 1794965968126
+      modified: 1794966051379
+      isPrivate: false
+      description: ""
+      sortKey: -1790874586520.5
+    method: POST
+    body:
+      mimeType: application/json
+      text: >-
+        {
+          "descricao": "Problemas graves no áudio durante a transmissão da aula de Serverless.",
+          "nota": 2
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.3.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_2d89f6a684095fc708ce0b16e196e8ed453efcfa
+    created: 1794269165695
+    modified: 1794269165695
+environments:
+  name: Base Environment
+  meta:
+    id: env_2d89f6a684095fc708ce0b16e196e8ed453efcfa
+    created: 1794269165692
+    modified: 1794269165692
+    isPrivate: false
