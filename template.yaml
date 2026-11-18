@@ -4,7 +4,7 @@ Description: Plataforma Serverless de Feedback de Aulas - Tech Challenge Fase 4
 
 Globals:
   Function:
-    Timeout: 15
+    Timeout: 30
     MemorySize: 1024
     Runtime: java21
     CodeUri: target/api-feedback-0.0.1-SNAPSHOT-aws.jar
@@ -12,6 +12,8 @@ Globals:
       - x86_64
     Environment:
       Variables:
+        MAIN_CLASS: com.pos.tech.challenge.feedback.ApiFeedbackApplication
+        SPRING_MAIN_WEB_APPLICATION_TYPE: none
         DB_URL: '{{resolve:ssm:/feedback/db_url}}'
         DB_USER: '{{resolve:ssm:/feedback/db_user}}'
         DB_PASS: '{{resolve:ssm:/feedback/db_pass}}'
@@ -30,6 +32,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      AutoPublishAlias: live
       SnapStart:
         ApplyOn: PublishedVersions
       Environment:
@@ -52,6 +55,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      AutoPublishAlias: live
       SnapStart:
         ApplyOn: PublishedVersions
       Environment:
@@ -82,3 +86,8 @@ Resources:
       Dimensions:
         - Name: FunctionName
           Value: !Ref ProcessarAvaliacaoFunction
+
+Outputs:
+  AvaliacaoApiUrl:
+    Description: URL do Endpoint POST /avaliacao no API Gateway
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/avaliacao"
